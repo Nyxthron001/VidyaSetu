@@ -130,6 +130,7 @@ function saveQuizResult(courseId, score, total){
 function finishQuiz(courseId){
   let score = 0; QUIZ.forEach((q,i)=>{ if(quizState.answers[i]===q.correct) score++; });
   saveQuizResult(courseId, score, QUIZ.length);
+  
   location.hash = '#/courses/'+courseId+'/quiz/result';
 }
 function queueDoubtOffline(courseTitle, text){
