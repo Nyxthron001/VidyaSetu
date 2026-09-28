@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VidyaSetu Tech Stack</title>
+    <style>
+        :root {
+            --primary: #3a86ff;
+            --secondary: #8338ec;
+            --accent: #ff006e;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --border-radius: 8px;
+            --shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            background: #f5f5f5;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        h1 { font-size: 2rem; margin-bottom: 10px; }
+        .subtitle { opacity: 0.9; }
+        .content { padding: 40px; }
+        .section { margin-bottom: 30px; padding: 25px; background: var(--light); border-radius: var(--border-radius); }
+        h2 { color: var(--primary); font-size: 1.5rem; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid var(--primary); }
+        h3 { color: var(--secondary); font-size: 1.2rem; margin: 20px 0 10px; }
+        p { margin-bottom: 15px; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background: rgba(0,0,0,0.05); font-weight: 600; }
+        .tag {
+            display: inline-block;
+            background: white;
+            color: var(--dark);
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            margin: 3px;
+            border: 1px solid #ddd;
+        }
+        pre { background: #2d2d2d; color: #f8f8f2; padding: 15px; border-radius: var(--border-radius); overflow-x: auto; margin: 15px 0; }
+        code { font-family: Consolas, Monaco, monospace; }
+        .footer { text-align: center; padding: 20px; background: var(--dark); color: white; margin-top: 30px; }
+        @media (max-width: 768px) { .content { padding: 20px; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>VidyaSetu Tech Stack</h1>
+            <p class="subtitle">Technology architecture and implementation guide</p>
+        </div>
+        <div class="content">
+            <div class="section">
+                <h2>Project Overview</h2>
+                <p>VidyaSetu is a mobile-first, offline-capable educational platform for students in rural India with limited or intermittent internet connectivity.</p>
+                <p>The platform addresses the digital divide by providing accessible, localized learning experiences through modern web technologies.</p>
+            </div>
+            <div class="section">
+                <h2>Technology Stack</h2>
+                <h3>Frontend</h3>
+                <table>
+                    <tr><th>Technology</th><th>Purpose</th></tr>
+                    <tr><td>HTML5</td><td>Semantic markup</td></tr>
+                    <tr><td>CSS3</td><td>Styling (Variables, Grid, Flexbox)</td></tr>
+                    <tr><td>JavaScript ES6+</td><td>Application logic</td></tr>
+                    <tr><td>LocalStorage</td><td>Offline data persistence</td></tr>
+                    <tr><td>IndexedDB</td><td>Structured storage</td></tr>
+                    <tr><td>Service Worker</td><td>PWA offline caching</td></tr>
+                </table>
+                <h3>Backend</h3>
+                <table>
+                    <tr><th>Technology</th><th>Purpose</th></tr>
+                    <tr><td>Node.js</td><td>Runtime environment</td></tr>
+                    <tr><td>Express.js</td><td>REST API framework</td></tr>
+                    <tr><td>SQLite</td><td>Database (optional)</td></tr>
+                </table>
+                <div style="margin-top: 15px;">
+                    <span class="tag">frontend</span>
+                    <span class="tag">backend</span>
+                    <span class="tag">offline-first</span>
+                </div>
+            </div>
+            <div class="section">
+                <h2>Project Structure</h2>
+                <pre><code>VidyaSetu/
+├── vidyasetu.html        # Main application
+├── backend/
+│   ├── server.js         # Express server
+│   ├── database.js       # SQLite module
+│   └── package.json
+├── Documentation/
+│   └── VidyaSetu_Tech_Stack_Documentation.html
+└── VidyaSetu_*.docx      # Business documentation</code></pre>
+            </div>
+            <div class="section">
+                <h2>Getting Started</h2>
+                <p><strong>Prerequisites:</strong> Node.js 18+, npm, modern browser</p>
+                <pre><code>cd backend
+npm install
+npm start</code></pre>
+                <p>Server runs at <code>http://localhost:3000</code></p>
+            </div>
+        </div>
+        <div class="footer">
+            <p>VidyaSetu Tech Stack Documentation | September 2026</p>
+        </div>
+    </div>
+</body>
+</html>
