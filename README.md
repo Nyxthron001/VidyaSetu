@@ -1,96 +1,80 @@
-# VidyaSetu
+# VidyaSetu (विद्यासेतु)
 
-An offline-first educational platform built for students in rural India who face limited or unreliable internet connectivity.
+An offline-first learning web app designed for students with limited or intermittent internet connectivity in rural areas.
 
-## The Problem We Address
+Students can download course lessons, take quizzes, track progress, and submit questions/doubts to mentors offline. When the device reconnects to the internet or a local community learning hub, cached progress and queries automatically sync with the backend.
 
-In many parts of India, students have smartphones but inconsistent internet access. This gap prevents them from accessing quality educational content when they need it most. VidyaSetu bridges this divide by letting students download courses and learn even when they're offline.
+---
 
-## What Makes It Different
+## Key Features
 
-- **Works without internet** - Download lessons while you have data, study anywhere later
-- **Bilingual interface** - Available in Hindi and English
-- **Progress that sticks** - Your learning progress saves locally and syncs when you're back online
-- **Mentor support** - Ask questions and get help from mentors even in remote areas
-- **Mobile-first design** - Built for low-end smartphones with varying screen sizes
+- **Offline-First Learning**: All course content, quizzes, and progress are cached locally in `localStorage`.
+- **Bilingual (Hindi / English)**: Full in-app language switching with Hindi as default.
+- **Mentorship & Doubts**: Students can queue doubts offline; they sync automatically once back online.
+- **Accessibility Support**: Built-in dark mode, high contrast mode, adjustable text size, and Web Speech read-aloud support.
+- **Lightweight Backend**: Node.js + Express with an SQLite database for syncing student data and serving course catalogs.
 
-## Quick Start
-
-### Running the Frontend Only
-
-Just open `vidyasetu.html` in any modern browser. It works completely offline using local storage.
-
-### Running with Backend
-
-```bash
-cd backend
-npm install
-npm start
-```
-
-Then open `http://localhost:3000` in your browser.
-
-## Tech Stack
-
-- **Frontend**: Vanilla JavaScript, CSS3
-- **Backend**: Node.js, Express.js
-- **Database**: SQLite3
-- **Storage**: LocalStorage for offline client-side caching
-
-## Features
-
-| Feature | Description |
-|---------|-------------|
-| Course Library | Browse and download courses for offline access |
-| Lesson Reader | Read lessons with audio support and transcripts |
-| Quiz System | Take quizzes and track scores |
-| Progress Tracking | Monitor your learning journey |
-| Mentor Chat | Ask doubts and get responses |
-| Achievements | Earn badges as you progress |
-| Learning Hubs | Connect to community learning centers |
+---
 
 ## Project Structure
 
 ```
 VidyaSetu/
-├── vidyasetu.html          # Main frontend application
+├── vidyasetu.html       # Standalone frontend SPA (HTML, CSS, Vanilla JS)
 ├── backend/
-│   ├── server.js          # Express API server & routes
-│   ├── database.js        # SQLite database connection & schema
+│   ├── server.js        # Express REST API server
+│   ├── database.js      # SQLite connection & schema setup
 │   ├── seeds/
-│   │   └── data.json      # Initial course, quiz, & opportunity seed data
+│   │   └── data.json    # Initial courses, lessons, and quiz questions
 │   ├── package.json
 │   └── README.md
 ├── README.md
 └── .gitignore
 ```
 
-## API Endpoints
+---
 
-The backend provides these REST endpoints:
+## Getting Started
 
-- `GET /api/courses` - List all courses
-- `GET /api/courses/:id` - Get course details
-- `GET /api/courses/:id/lessons` - Get lessons for a course
-- `GET /api/courses/:id/quiz` - Get quiz questions
-- `GET /api/progress/:studentId` - Get student progress
-- `POST /api/progress/:studentId/lesson` - Save lesson progress
-- `POST /api/progress/:studentId/quiz` - Submit quiz results
-- `GET /api/doubts/:studentId` - Get student's doubts
-- `POST /api/doubts` - Submit a new doubt
-- `GET /api/opportunities` - List available opportunities
-- `POST /api/sync/queue` - Queue offline changes
-- `POST /api/sync/process` - Process queued sync items
+### 1. Run Frontend Only (No Installation Needed)
+You can directly open `vidyasetu.html` in any web browser. The app runs completely standalone in offline demo mode using client-side storage.
 
-## Browser Support
+### 2. Run with Backend API
 
-- Chrome (latest)
-- Firefox (latest)
-- Safari (latest)
-- Edge (latest)
+**Prerequisites:** [Node.js](https://nodejs.org/) (v16 or higher)
 
-Works best on mobile browsers including Chrome for Android and Safari for iOS.
+```bash
+# Navigate to backend directory
+cd backend
+
+# Install dependencies
+npm install
+
+# Start the server (creates and seeds SQLite database automatically)
+npm start
+```
+
+The server will start on `http://localhost:3000` and automatically serve both the API and the `vidyasetu.html` frontend.
+
+---
+
+## API Overview
+
+| Endpoint | Method | Description |
+|---|---|---|
+| `/api/courses` | `GET` | List all available courses |
+| `/api/courses/:id/lessons` | `GET` | Get lessons list for a course |
+| `/api/courses/:id/quiz` | `GET` | Get quiz questions for a course |
+| `/api/progress/:studentId` | `GET` | Fetch student lesson & quiz progress |
+| `/api/progress/:studentId/lesson` | `POST` | Record completed lesson |
+| `/api/progress/:studentId/quiz` | `POST` | Save quiz score |
+| `/api/doubts/:studentId` | `GET` / `POST` | View or submit academic doubts |
+| `/api/opportunities` | `GET` | List local scholarships & internships |
+| `/api/sync/queue` | `POST` | Push offline actions to sync queue |
+| `/api/sync/process` | `POST` | Process pending sync queue items |
+
+---
 
 ## License
 
-MIT License - feel free to use this for any purpose.
+MIT

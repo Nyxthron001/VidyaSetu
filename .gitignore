@@ -6,7 +6,6 @@ backend/node_modules/
 *.db
 *.sqlite
 *.sqlite3
-backend/vidyasetu.db
 
 # Documents & Presentations
 *.docx
@@ -16,12 +15,13 @@ Documentation/
 New folder/
 graphify-out/
 
-# Images & Assets (raw dumps)
+# Images & Screenshots
 *.png
 *.jpg
 *.jpeg
 
-# Logs & Environment
+# Logs, Transcripts & Temporary Files
 *.log
+*.txt
 .env
 .DS_Store
