@@ -46,10 +46,8 @@ You can directly open `vidyasetu.html` in any web browser. The app runs complete
 ```bash
 # Navigate to backend directory
 cd backend
-
 # Install dependencies
 npm install
-
 # Start the server (creates and seeds SQLite database automatically)
 npm start
 ```
@@ -72,9 +70,3 @@ The server will start on `http://localhost:3000` and automatically serve both th
 | `/api/opportunities` | `GET` | List local scholarships & internships |
 | `/api/sync/queue` | `POST` | Push offline actions to sync queue |
 | `/api/sync/process` | `POST` | Process pending sync queue items |
-
----
-
-## License
-
-MIT
