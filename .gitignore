@@ -2,11 +2,24 @@
 node_modules/
 backend/node_modules/
 
+# Runtime Database
+*.db
+*.sqlite
+*.sqlite3
+backend/vidyasetu.db
+
 # Documents & Presentations
 *.docx
 *.pptx
 *.pdf
 Documentation/
+New folder/
+graphify-out/
+
+# Images & Assets (raw dumps)
+*.png
+*.jpg
+*.jpeg
 
 # Logs & Environment
 *.log

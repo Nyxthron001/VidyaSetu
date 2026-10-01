@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const path = require('path');
+const db = require('./database');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -16,290 +17,236 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'vidyasetu.html'));
 });
 
-const db = {
-    students: new Map(),
-    courses: [],
-    progress: new Map(),
-    doubts: [],
-    syncQueue: []
-};
-
-function initializeData() {
-    db.courses = [
-        {
-            id: 'digital-skills',
-            title: 'Digital Skills for College Students',
-            level: 'Beginner',
-            lessons: 5,
-            size: '42 MB',
-            langs: 'Hindi + English',
-            progress: 65,
-            status: 'in-progress',
-            desc: 'Core digital literacy for college life.'
-        },
-        {
-            id: 'comm-english',
-            title: 'Communication and Spoken English',
-            level: 'Beginner',
-            lessons: 6,
-            size: '55 MB',
-            langs: 'English + Hindi',
-            progress: 35,
-            status: 'in-progress',
-            desc: 'Build confidence speaking English.'
-        },
-        {
-            id: 'resume-prep',
-            title: 'Resume and Interview Preparation',
-            level: 'Beginner',
-            lessons: 4,
-            size: '28 MB',
-            langs: 'Hindi + English',
-            progress: 0,
-            status: 'not-started',
-            desc: 'Prepare a strong resume and ace interviews.'
-        },
-        {
-            id: 'digital-safety',
-            title: 'Introduction to Digital Safety',
-            level: 'Beginner',
-            lessons: 5,
-            size: '36 MB',
-            langs: 'Hindi + English',
-            progress: 100,
-            status: 'downloaded',
-            desc: 'Stay safe online and protect your data.'
-        }
-    ];
-
-    db.opportunities = [
-        {
-            id: 1,
-            title: 'Digital Skills Scholarship',
-            organization: 'State Education Board',
-            location: 'Uttar Pradesh',
-            deadline: '15 Nov 2026',
-            type: 'Scholarship'
-        },
-        {
-            id: 2,
-            title: 'Community Data Entry Internship',
-            organization: 'Local NGO',
-            location: 'Remote / Rural UP',
-            deadline: '1 Dec 2026',
-            type: 'Internship'
-        },
-        {
-            id: 3,
-            title: 'Retail Apprenticeship',
-            organization: 'District Trade Council',
-            location: 'Nearby town',
-            deadline: '20 Oct 2026',
-            type: 'Apprenticeship'
-        }
-    ];
-
-    db.lessons = {
-        'digital-skills': [
-            'What is Digital Learning?',
-            'Email Basics',
-            'Online Safety',
-            'Creating Documents',
-            'Resume Preparation',
-            'Final Assessment'
-        ],
-        'comm-english': [
-            'Introduction to Communication',
-            'Basic Greetings',
-            'Introducing Yourself',
-            'Phone Etiquette',
-            'Writing Emails',
-            'Final Assessment'
-        ],
-        'resume-prep': [
-            'Resume Basics',
-            'Formatting Your Resume',
-            'Common Interview Questions',
-            'Final Assessment'
-        ],
-        'digital-safety': [
-            'Understanding Online Threats',
-            'Strong Passwords',
-            'Phishing Awareness',
-            'Privacy Settings',
-            'Final Assessment'
-        ]
-    };
-
-    db.quizzes = {
-        'digital-skills': [
-            { q: 'What is the benefit of offline learning?', opts: ['No internet needed to keep learning', 'Faster videos', 'More storage', 'Less content'], correct: 0 },
-            { q: 'Which tool stores local progress?', opts: ['Browser storage', 'A printer', 'A calculator', 'A camera'], correct: 0 },
-            { q: 'Why are captions useful?', opts: ['They help everyone follow audio content', 'They slow down video', 'They cost extra', 'They replace lessons'], correct: 0 },
-            { q: 'What should a strong password contain?', opts: ['A mix of letters, numbers and symbols', 'Only your name', 'Just numbers', 'The word password'], correct: 0 },
-            { q: 'Who helps resolve academic doubts?', opts: ['A mentor', 'A stranger', 'No one', 'A random app'], correct: 0 }
-        ]
-    };
-}
-
-initializeData();
-
 app.get('/api/health', (req, res) => {
     res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-app.get('/api/courses', (req, res) => {
-    res.json({ success: true, data: db.courses });
-});
-
-app.get('/api/courses/:id', (req, res) => {
-    const course = db.courses.find(c => c.id === req.params.id);
-    if (!course) {
-        return res.status(404).json({ success: false, error: 'Course not found' });
+// Courses
+app.get('/api/courses', async (req, res) => {
+    try {
+        const courses = await db.all('SELECT * FROM courses');
+        res.json({ success: true, data: courses });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
     }
-    res.json({ success: true, data: course });
 });
 
-app.get('/api/courses/:id/lessons', (req, res) => {
-    const lessons = db.lessons[req.params.id] || [];
-    res.json({ success: true, data: lessons });
-});
-
-app.get('/api/courses/:id/quiz', (req, res) => {
-    const quiz = db.quizzes[req.params.id] || [];
-    res.json({ success: true, data: quiz });
-});
-
-app.get('/api/progress/:studentId', (req, res) => {
-    const studentId = req.params.studentId;
-    const progress = db.progress.get(studentId) || {
-        studentId,
-        courses: {},
-        quizzes: [],
-        achievements: [],
-        totalLessonsCompleted: 0,
-        overallProgress: 0
-    };
-    res.json({ success: true, data: progress });
-});
-
-app.post('/api/progress/:studentId/lesson', (req, res) => {
-    const { studentId } = req.params;
-    const { courseId, lessonIndex } = req.body;
-
-    let progress = db.progress.get(studentId) || { studentId, courses: {} };
-
-    if (!progress.courses[courseId]) {
-        progress.courses[courseId] = { completedLessons: [] };
+app.get('/api/courses/:id', async (req, res) => {
+    try {
+        const course = await db.get('SELECT * FROM courses WHERE id = ?', [req.params.id]);
+        if (!course) return res.status(404).json({ success: false, error: 'Course not found' });
+        res.json({ success: true, data: course });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
     }
+});
 
-    if (!progress.courses[courseId].completedLessons.includes(lessonIndex)) {
-        progress.courses[courseId].completedLessons.push(lessonIndex);
-        progress.totalLessonsCompleted = (progress.totalLessonsCompleted || 0) + 1;
+app.get('/api/courses/:id/lessons', async (req, res) => {
+    try {
+        const rows = await db.all(
+            'SELECT title FROM lessons WHERE course_id = ? ORDER BY position ASC',
+            [req.params.id]
+        );
+        const titles = rows.map(r => r.title);
+        res.json({ success: true, data: titles });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
     }
-
-    db.progress.set(studentId, progress);
-    res.json({ success: true, data: progress });
 });
 
-app.post('/api/progress/:studentId/quiz', (req, res) => {
-    const { studentId } = req.params;
-    const { courseId, score, total } = req.body;
-
-    let progress = db.progress.get(studentId) || { studentId, courses: {}, quizzes: [] };
-
-    progress.quizzes.push({ courseId, score, total, date: new Date().toISOString() });
-
-    const course = db.courses.find(c => c.id === courseId);
-    if (course) {
-        course.progress = Math.round((score / total) * 100);
+app.get('/api/courses/:id/quiz', async (req, res) => {
+    try {
+        const rows = await db.all(
+            'SELECT question, options, correct_answer FROM quiz_questions WHERE course_id = ?',
+            [req.params.id]
+        );
+        const questions = rows.map(r => ({
+            q: r.question,
+            opts: JSON.parse(r.options),
+            correct: r.correct_answer
+        }));
+        res.json({ success: true, data: questions });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
     }
-
-    db.progress.set(studentId, progress);
-    res.json({ success: true, data: progress });
 });
 
-app.get('/api/doubts/:studentId', (req, res) => {
-    const studentId = req.params.studentId;
-    const doubts = db.doubts.filter(d => d.studentId === studentId);
-    res.json({ success: true, data: doubts });
-});
+// Student Progress
+app.get('/api/progress/:studentId', async (req, res) => {
+    try {
+        const { studentId } = req.params;
+        const rows = await db.all(
+            'SELECT * FROM student_progress WHERE student_id = ?',
+            [studentId]
+        );
 
-app.post('/api/doubts', (req, res) => {
-    const { studentId, courseId, courseName, lesson, question } = req.body;
+        const courses = {};
+        let totalLessonsCompleted = 0;
 
-    const doubt = {
-        id: db.doubts.length + 1,
-        studentId,
-        courseId,
-        courseName,
-        lesson,
-        question,
-        status: 'Pending',
-        date: new Date().toISOString(),
-        reply: null
-    };
+        rows.forEach(r => {
+            if (r.completed && r.lesson_index !== null) {
+                if (!courses[r.course_id]) courses[r.course_id] = { completedLessons: [] };
+                courses[r.course_id].completedLessons.push(r.lesson_index);
+                totalLessonsCompleted++;
+            }
+        });
 
-    db.doubts.push(doubt);
-    res.json({ success: true, data: doubt });
-});
+        const quizRows = await db.all(
+            `SELECT course_id, quiz_score, quiz_total, last_accessed AS date
+             FROM student_progress
+             WHERE student_id = ? AND quiz_score IS NOT NULL`,
+            [studentId]
+        );
 
-app.get('/api/doubts/:studentId/:doubtId', (req, res) => {
-    const doubt = db.doubts.find(d =>
-        d.id === parseInt(req.params.doubtId) &&
-        d.studentId === req.params.studentId
-    );
-
-    if (!doubt) {
-        return res.status(404).json({ success: false, error: 'Doubt not found' });
+        res.json({
+            success: true,
+            data: {
+                studentId,
+                courses,
+                quizzes: quizRows,
+                totalLessonsCompleted,
+                overallProgress: 0
+            }
+        });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
     }
-
-    res.json({ success: true, data: doubt });
 });
 
-app.get('/api/opportunities', (req, res) => {
-    res.json({ success: true, data: db.opportunities });
+app.post('/api/progress/:studentId/lesson', async (req, res) => {
+    try {
+        const { studentId } = req.params;
+        const { courseId, lessonIndex } = req.body;
+
+        const existing = await db.get(
+            'SELECT id FROM student_progress WHERE student_id = ? AND course_id = ? AND lesson_index = ? AND completed = 1',
+            [studentId, courseId, lessonIndex]
+        );
+
+        if (!existing) {
+            await db.run(
+                'INSERT INTO student_progress (student_id, course_id, lesson_index, completed) VALUES (?,?,?,1)',
+                [studentId, courseId, lessonIndex]
+            );
+        }
+
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
 });
 
-app.post('/api/sync/queue', (req, res) => {
-    const { studentId, data, type } = req.body;
+app.post('/api/progress/:studentId/quiz', async (req, res) => {
+    try {
+        const { studentId } = req.params;
+        const { courseId, score, total } = req.body;
 
-    const syncItem = {
-        id: db.syncQueue.length + 1,
-        studentId,
-        type,
-        data,
-        timestamp: new Date().toISOString(),
-        synced: false
-    };
+        await db.run(
+            'INSERT INTO student_progress (student_id, course_id, quiz_score, quiz_total) VALUES (?,?,?,?)',
+            [studentId, courseId, score, total]
+        );
 
-    db.syncQueue.push(syncItem);
-    res.json({ success: true, data: syncItem });
+        const pct = Math.round((score / total) * 100);
+        await db.run('UPDATE courses SET progress = ? WHERE id = ?', [pct, courseId]);
+
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
 });
 
-app.get('/api/sync/queue/:studentId', (req, res) => {
-    const pending = db.syncQueue.filter(s =>
-        s.studentId === req.params.studentId && !s.synced
-    );
-    res.json({ success: true, data: pending });
+// Doubts & Mentorship
+app.get('/api/doubts/:studentId', async (req, res) => {
+    try {
+        const doubts = await db.all(
+            'SELECT * FROM doubts WHERE student_id = ? ORDER BY created_at DESC',
+            [req.params.studentId]
+        );
+        res.json({ success: true, data: doubts });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
 });
 
-app.post('/api/sync/process', (req, res) => {
-    const { studentId } = req.body;
-
-    const pending = db.syncQueue.filter(s =>
-        s.studentId === studentId && !s.synced
-    );
-
-    pending.forEach(item => {
-        item.synced = true;
-        item.syncedAt = new Date().toISOString();
-    });
-
-    res.json({ success: true, data: { processed: pending.length } });
+app.post('/api/doubts', async (req, res) => {
+    try {
+        const { studentId, courseId, courseName, lesson, question } = req.body;
+        const result = await db.run(
+            'INSERT INTO doubts (student_id, course_id, course_name, lesson, question) VALUES (?,?,?,?,?)',
+            [studentId, courseId, courseName, lesson, question]
+        );
+        const doubt = await db.get('SELECT * FROM doubts WHERE id = ?', [result.lastID]);
+        res.json({ success: true, data: doubt });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
 });
 
-app.get('/api/hubs', (req, res) => {
+app.get('/api/doubts/:studentId/:doubtId', async (req, res) => {
+    try {
+        const doubt = await db.get(
+            'SELECT * FROM doubts WHERE id = ? AND student_id = ?',
+            [req.params.doubtId, req.params.studentId]
+        );
+        if (!doubt) return res.status(404).json({ success: false, error: 'Doubt not found' });
+        res.json({ success: true, data: doubt });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+// Opportunities
+app.get('/api/opportunities', async (req, res) => {
+    try {
+        const opps = await db.all('SELECT * FROM opportunities');
+        res.json({ success: true, data: opps });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+// Offline Sync Queue
+app.post('/api/sync/queue', async (req, res) => {
+    try {
+        const { studentId, data, type } = req.body;
+        const result = await db.run(
+            'INSERT INTO sync_queue (student_id, type, data) VALUES (?,?,?)',
+            [studentId, type, JSON.stringify(data)]
+        );
+        const item = await db.get('SELECT * FROM sync_queue WHERE id = ?', [result.lastID]);
+        res.json({ success: true, data: item });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+app.get('/api/sync/queue/:studentId', async (req, res) => {
+    try {
+        const pending = await db.all(
+            'SELECT * FROM sync_queue WHERE student_id = ? AND synced = 0',
+            [req.params.studentId]
+        );
+        res.json({ success: true, data: pending });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+app.post('/api/sync/process', async (req, res) => {
+    try {
+        const { studentId } = req.body;
+        const result = await db.run(
+            'UPDATE sync_queue SET synced = 1, synced_at = CURRENT_TIMESTAMP WHERE student_id = ? AND synced = 0',
+            [studentId]
+        );
+        res.json({ success: true, data: { processed: result.changes } });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+// Community Hubs
+app.get('/api/hubs', async (req, res) => {
     res.json({
         success: true,
         data: [
@@ -308,9 +255,15 @@ app.get('/api/hubs', (req, res) => {
     });
 });
 
-app.listen(PORT, () => {
-    console.log(`Server running at http://localhost:${PORT}`);
-    console.log('Frontend available at http://localhost:' + PORT);
-});
+db.init()
+    .then(() => {
+        app.listen(PORT, () => {
+            console.log(`Server running at http://localhost:${PORT}`);
+        });
+    })
+    .catch((err) => {
+        console.error('Failed to start server:', err.message);
+        process.exit(1);
+    });
 
 module.exports = app;
