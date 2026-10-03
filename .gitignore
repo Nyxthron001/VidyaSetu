@@ -2,6 +2,9 @@
 node_modules/
 backend/node_modules/
 
+# IDE & Assistant Worktrees
+.claude/
+
 # Runtime Database
 *.db
 *.sqlite
@@ -15,10 +18,12 @@ Documentation/
 New folder/
 graphify-out/
 
-# Images & Screenshots
-*.png
-*.jpg
-*.jpeg
+# Root Screenshots & Media
+/*.png
+/*.jpg
+/*.jpeg
+!assets/
+!assets/**
 
 # Logs, Transcripts & Temporary Files
 *.log
