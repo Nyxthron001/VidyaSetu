@@ -104,3 +104,4 @@ function render() {
 }
 
 window.addEventListener('hashchange', render);
+

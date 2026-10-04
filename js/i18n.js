@@ -174,3 +174,4 @@ const I18N = {
 function t(key) {
   return (I18N[state.language] && I18N[state.language][key]) || I18N.en[key] || key;
 }
+

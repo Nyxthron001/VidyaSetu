@@ -537,3 +537,4 @@ function notificationsScreen() {
     <div><div>${n.text}</div><div class="muted">${n.time}</div></div>
   </div>`).join('') : `<div class="placeholder"><h2>${t('no_notifications')}</h2><p>${t('all_caught_up')}</p></div>`}`;
 }
+

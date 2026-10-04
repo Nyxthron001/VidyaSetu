@@ -161,3 +161,4 @@ const DEMO_STEPS = [
   { hash: '#/settings', note: 'Turn Demo Offline Mode back off.' },
   { hash: '#/downloads', note: 'Click Sync Now and watch progress sync.' }
 ];
+

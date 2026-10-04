@@ -6,13 +6,11 @@ const store = {
       const v = localStorage.getItem(k);
       return v === null ? d : JSON.parse(v);
     } catch (e) {
-      return d;
+      return d;  // corrupt storage — fall back
     }
   },
   set(k, v) {
-    try {
-      localStorage.setItem(k, JSON.stringify(v));
-    } catch (e) {}
+    try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* storage full or blocked */ }
   }
 };
 
@@ -259,3 +257,4 @@ function clearAllLocalData() {
   toast(t('data_cleared_toast'));
   location.hash = '#/home';
 }
+

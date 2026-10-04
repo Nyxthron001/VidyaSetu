@@ -20,16 +20,7 @@ Students can download course lessons, take quizzes, track progress, and submit q
 
 ```
 VidyaSetu/
-├── vidyasetu.html       # Clean HTML entry point
-├── styles.css           # Global stylesheet & design tokens
-├── sw.js                # Service worker for offline caching
-├── assets/              # Logos and media assets
-├── js/
-│   ├── data.js          # Course, lesson & quiz datasets
-│   ├── i18n.js          # Hindi & English localization
-│   ├── state.js         # LocalStorage persistence & audio state
-│   ├── screens.js       # Modular UI screen renderers
-│   └── router.js        # Hash routing & navigation
+├── vidyasetu.html       # Standalone frontend SPA (HTML, CSS, Vanilla JS)
 ├── backend/
 │   ├── server.js        # Express REST API server
 │   ├── database.js      # SQLite connection & schema setup
